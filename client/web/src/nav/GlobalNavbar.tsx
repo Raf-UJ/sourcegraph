@@ -368,7 +368,7 @@ export const InlineNavigationPanel: FC<InlineNavigationPanelProps> = props => {
 
     const hideCodyDropdown = disableCodyFeatures || !props.authenticatedUser
     const codyNavigation = hideCodyDropdown ? (
-        <NavItem icon={CodyLogo}>
+        <NavItem icon={CodyLogo} key="cody">
             <NavLink variant={navLinkVariant} to={disableCodyFeatures ? PageRoutes.Cody : PageRoutes.CodyChat}>
                 Cody AI
             </NavLink>

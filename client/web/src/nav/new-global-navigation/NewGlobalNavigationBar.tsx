@@ -1,4 +1,4 @@
-import { FC, useCallback, useState, ComponentType, PropsWithChildren } from 'react'
+import { type FC, useCallback, useState, type ComponentType, type PropsWithChildren } from 'react'
 
 import { mdiClose, mdiMenu } from '@mdi/js'
 import classNames from 'classnames'
@@ -10,12 +10,13 @@ import shallow from 'zustand/shallow'
 
 import { LegacyToggles } from '@sourcegraph/branded'
 import { Toggles } from '@sourcegraph/branded/src/search-ui/input/toggles/Toggles'
-import { SearchQueryState, SubmitSearchParameters } from '@sourcegraph/shared/src/search'
-import { TelemetryProps } from '@sourcegraph/shared/src/telemetry/telemetryService'
+import type { SearchQueryState, SubmitSearchParameters } from '@sourcegraph/shared/src/search'
+import { useExperimentalFeatures } from '@sourcegraph/shared/src/settings/settings'
+import type { TelemetryProps } from '@sourcegraph/shared/src/telemetry/telemetryService'
 import { useIsLightTheme } from '@sourcegraph/shared/src/theme'
 import { Text, Icon, Button, Modal, Link, ProductStatusBadge, ButtonLink } from '@sourcegraph/wildcard'
 
-import { AuthenticatedUser } from '../../auth'
+import type { AuthenticatedUser } from '../../auth'
 import { BatchChangesIconNav } from '../../batches/icons'
 import { CodeMonitoringLogo } from '../../code-monitoring/CodeMonitoringLogo'
 import { CodyLogo } from '../../cody/components/CodyLogo'
@@ -105,7 +106,7 @@ export const NewGlobalNavigationBar: FC<NewGlobalNavigationBar> = props => {
                         showSearchContext={showSearchContext}
                         showOwn={showOwn}
                         showCodySearch={showCodySearch}
-                        showCodyDropdown={false}
+                        authenticatedUser={authenticatedUser}
                         showSearchJobs={showSearchJobs}
                         showSearchNotebook={showSearchNotebook}
                         showCodeMonitoring={showCodeMonitoring}
