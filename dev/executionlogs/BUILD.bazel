@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "executionlogs_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/sourcegraph/sourcegraph/dev/executionlogs",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//dev/executionlogs/proto",
+        "@org_golang_google_protobuf//encoding/protodelim",
+    ],
+)
+
+go_binary(
+    name = "executionlogs",
+    embed = [":executionlogs_lib"],
+    visibility = ["//visibility:public"],
+)
