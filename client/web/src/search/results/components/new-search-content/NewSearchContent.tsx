@@ -145,6 +145,7 @@ export const NewSearchContent: FC<NewSearchContentProps> = props => {
     const containerRef = useRef<HTMLDivElement>(null)
     const { previewBlob, clearPreview } = useSearchResultState()
 
+    const showKeywordSearchToggle = useKeywordSearch()
     const newFiltersEnabled = useIsNewSearchFiltersEnabled()
     const [sidebarCollapsed, setSidebarCollapsed] = useLocalStorage('search.sidebar.collapsed', true)
 
@@ -179,7 +180,10 @@ export const NewSearchContent: FC<NewSearchContentProps> = props => {
         [onSearchSubmit]
     )
 
-    const showKeywordSearchToggle = useKeywordSearch()
+    const handleFilterPanelClose = useCallback(() => {
+        clearPreview()
+        telemetryService.log('SearchFilePreviewClose', {}, {})
+    }, [telemetryService, clearPreview])
 
     return (
         <div className={classNames(styles.root, { [styles.rootWithNewFilters]: newFiltersEnabled })}>
@@ -190,6 +194,7 @@ export const NewSearchContent: FC<NewSearchContentProps> = props => {
                     withCountAllFilter={isSearchLimitHit(results)}
                     className={styles.newFilters}
                     onQueryChange={handleFilterPanelQueryChange}
+                    telemetryService={telemetryService}
                 />
             )}
 
@@ -335,7 +340,8 @@ export const NewSearchContent: FC<NewSearchContentProps> = props => {
                     platformContext={platformContext}
                     extensionsController={extensionsController}
                     settingsCascade={settingsCascade}
-                    onClose={clearPreview}
+                    telemetryService={telemetryService}
+                    onClose={handleFilterPanelClose}
                 />
             )}
         </div>
@@ -376,7 +382,11 @@ const NewSearchSidebarWrapper: FC<PropsWithChildren<NewSearchSidebarWrapper>> = 
     )
 }
 
-interface FilePreviewPanelProps extends PlatformContextProps, SettingsCascadeProps, ExtensionsControllerProps {
+interface FilePreviewPanelProps
+    extends PlatformContextProps,
+        SettingsCascadeProps,
+        ExtensionsControllerProps,
+        TelemetryProps {
     blobInfo: SearchResultPreview
     submittedURLQuery: string
     patternType: SearchPatternType
@@ -394,6 +404,7 @@ const FilePreviewPanel: FC<FilePreviewPanelProps> = props => {
         platformContext,
         settingsCascade,
         extensionsController,
+        telemetryService,
     } = props
 
     const searchPanelConfig = useMemo<SearchPanelConfig>(
@@ -405,6 +416,10 @@ const FilePreviewPanel: FC<FilePreviewPanelProps> = props => {
         }),
         [caseSensitive, patternType, submittedURLQuery]
     )
+
+    useEffect(() => {
+        telemetryService.logViewEvent('SearchFilePreview')
+    }, [telemetryService])
 
     return (
         <Panel
