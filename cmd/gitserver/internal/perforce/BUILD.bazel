@@ -6,6 +6,7 @@ go_library(
     srcs = [
         "changelist.go",
         "cloneable.go",
+        "command.go",
         "depots.go",
         "groups.go",
         "login.go",
