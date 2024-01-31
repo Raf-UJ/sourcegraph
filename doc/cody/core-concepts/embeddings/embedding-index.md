@@ -44,7 +44,7 @@ If this attempt fails and you see `Embeddings Not Found` below your Cody chatbox
 
 To manually configure the `codebase` setting for Cody VS Code extension via the [extension settings](https://code.visualstudio.com/docs/getstarted/settings#_extension-settings), follow these steps:
 
-- Open the VS Code workspace settings by clicking:  `Code` > `Settings` > `Settings` (for macOS) or `File` > `Preferences (Settings)` ( for Windows and Linux)
+- Open the VS Code workspace settings by clicking:  `Cody` > `Settings` > `Settings` (for macOS) or `File` > `Preferences (Settings)` ( for Windows and Linux)
 - Switch to the Workspace settings tab
 - Type `Cody: Codebase` in the search bar
 - Next, enter the repository name as listed in your Sourcegraph instance in the `Cody: Codebase` field
