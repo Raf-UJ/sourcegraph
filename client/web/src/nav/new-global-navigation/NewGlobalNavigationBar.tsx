@@ -143,6 +143,7 @@ export const NewGlobalNavigationBar: FC<NewGlobalNavigationBar> = props => {
                     showBatchChanges={showBatchChanges}
                     showCodeInsights={showCodeInsights}
                     isSourcegraphDotCom={isSourcegraphDotCom}
+                    authenticatedUser={authenticatedUser}
                     onClose={() => setSideMenuOpen(false)}
                 />
             )}
@@ -305,6 +306,7 @@ interface SidebarNavigationProps {
     showBatchChanges: boolean
     showCodeInsights: boolean
     onClose: () => void
+    authenticatedUser: AuthenticatedUser | null
 }
 
 const SidebarNavigation: FC<SidebarNavigationProps> = props => {
@@ -318,6 +320,7 @@ const SidebarNavigation: FC<SidebarNavigationProps> = props => {
         showBatchChanges,
         showCodeInsights,
         isSourcegraphDotCom,
+        authenticatedUser,
         onClose,
     } = props
 
@@ -387,11 +390,13 @@ const SidebarNavigation: FC<SidebarNavigationProps> = props => {
                         Cody AI
                     </NavItemLink>
 
-                    <ul className={classNames(styles.sidebarNavigationList, styles.sidebarNavigationListNested)}>
-                        <NavItemLink url={PageRoutes.CodyChat} onClick={handleNavigationClick}>
-                            Web Chat
-                        </NavItemLink>
-                    </ul>
+                    {authenticatedUser && (
+                        <ul className={classNames(styles.sidebarNavigationList, styles.sidebarNavigationListNested)}>
+                            <NavItemLink url={PageRoutes.CodyChat} onClick={handleNavigationClick}>
+                                Web Chat
+                            </NavItemLink>
+                        </ul>
+                    )}
 
                     {showBatchChanges && (
                         <NavItemLink url="/batch-changes" icon={BatchChangesIconNav} onClick={handleNavigationClick}>
