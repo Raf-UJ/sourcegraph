@@ -3,25 +3,24 @@ import { FC, useCallback, useState, ComponentType, PropsWithChildren } from 'rea
 import { mdiClose, mdiMenu } from '@mdi/js'
 import classNames from 'classnames'
 import BarChartIcon from 'mdi-react/BarChartIcon'
-import BookOutlineIcon from 'mdi-react/BookOutlineIcon'
 import MagnifyIcon from 'mdi-react/MagnifyIcon'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { NavLink, RouteObject, useLocation, useNavigate } from 'react-router-dom'
 import shallow from 'zustand/shallow'
 
 import { LegacyToggles } from '@sourcegraph/branded'
 import { Toggles } from '@sourcegraph/branded/src/search-ui/input/toggles/Toggles'
-import { SearchQueryState, SubmitSearchParameters } from '@sourcegraph/shared/src/search'
-import { TelemetryProps } from '@sourcegraph/shared/src/telemetry/telemetryService'
+import type { SearchQueryState, SubmitSearchParameters } from '@sourcegraph/shared/src/search'
+import type { TelemetryProps } from '@sourcegraph/shared/src/telemetry/telemetryService'
 import { useIsLightTheme } from '@sourcegraph/shared/src/theme'
 import { Text, Icon, Button, Modal, Link, ProductStatusBadge, ButtonLink } from '@sourcegraph/wildcard'
 
-import { AuthenticatedUser } from '../../auth'
+import type { AuthenticatedUser } from '../../auth'
 import { BatchChangesIconNav } from '../../batches/icons'
-import { CodeMonitoringLogo } from '../../code-monitoring/CodeMonitoringLogo'
 import { CodyLogo } from '../../cody/components/CodyLogo'
 import { BrandLogo } from '../../components/branding/BrandLogo'
 import { DeveloperSettingsGlobalNavItem } from '../../devsettings/DeveloperSettingsGlobalNavItem'
 import { useFeatureFlag, useKeywordSearch } from '../../featureFlags/useFeatureFlag'
+import { useRoutesMatch } from '../../hooks'
 import { PageRoutes } from '../../routes.constants'
 import { isSearchJobsEnabled } from '../../search-jobs/utility'
 import { LazyV2SearchInput } from '../../search/input/LazyV2SearchInput'
@@ -42,6 +41,7 @@ interface NewGlobalNavigationBar extends TelemetryProps {
     codeInsightsEnabled: boolean
     showSearchBox: boolean
     selectedSearchContextSpec?: string
+    routes: RouteObject[]
 }
 
 /**
@@ -65,6 +65,7 @@ export const NewGlobalNavigationBar: FC<NewGlobalNavigationBar> = props => {
 
     const isLightTheme = useIsLightTheme()
     const [isSideMenuOpen, setSideMenuOpen] = useState(false)
+    const routeMatch = useRoutesMatch(props.routes)
 
     // Features enablement flags and conditions
     const isLicensed = !!window.context?.licenseInfo
@@ -105,7 +106,7 @@ export const NewGlobalNavigationBar: FC<NewGlobalNavigationBar> = props => {
                         showSearchContext={showSearchContext}
                         showOwn={showOwn}
                         showCodySearch={showCodySearch}
-                        showCodyDropdown={false}
+                        authenticatedUser={authenticatedUser}
                         showSearchJobs={showSearchJobs}
                         showSearchNotebook={showSearchNotebook}
                         showCodeMonitoring={showCodeMonitoring}
@@ -113,6 +114,7 @@ export const NewGlobalNavigationBar: FC<NewGlobalNavigationBar> = props => {
                         showCodeInsights={showCodeInsights}
                         isSourcegraphDotCom={isSourcegraphDotCom}
                         className={styles.inlineNavigationList}
+                        routeMatch={routeMatch}
                     />
                 )}
 
@@ -357,6 +359,17 @@ const SidebarNavigation: FC<SidebarNavigationProps> = props => {
                                 </NavItemLink>
                             )}
                             {showOwn && <NavItemLink url={PageRoutes.Own}>Code ownership</NavItemLink>}
+                            {showSearchNotebook && (
+                                <NavItemLink url={PageRoutes.Notebooks} onClick={handleNavigationClick}>
+                                    Notebooks
+                                </NavItemLink>
+                            )}
+
+                            {showCodeMonitoring && (
+                                <NavItemLink url="/code-monitoring" onClick={handleNavigationClick}>
+                                    Code Monitoring
+                                </NavItemLink>
+                            )}
                             {showCodySearch && (
                                 <NavItemLink url={PageRoutes.CodySearch} onClick={handleNavigationClick}>
                                     Natural language search <ProductStatusBadge status="experimental" />
@@ -370,21 +383,15 @@ const SidebarNavigation: FC<SidebarNavigationProps> = props => {
                         </ul>
                     </li>
 
-                    <NavItemLink url={PageRoutes.CodyChat} icon={CodyLogo} onClick={handleNavigationClick}>
-                        Cody
+                    <NavItemLink url={PageRoutes.Cody} icon={CodyLogo} onClick={handleNavigationClick}>
+                        Cody AI
                     </NavItemLink>
 
-                    {showSearchNotebook && (
-                        <NavItemLink url={PageRoutes.Notebooks} icon={BookOutlineIcon} onClick={handleNavigationClick}>
-                            Notebooks
+                    <ul className={classNames(styles.sidebarNavigationList, styles.sidebarNavigationListNested)}>
+                        <NavItemLink url={PageRoutes.CodyChat} onClick={handleNavigationClick}>
+                            Web Chat
                         </NavItemLink>
-                    )}
-
-                    {showCodeMonitoring && (
-                        <NavItemLink url="/code-monitoring" icon={CodeMonitoringLogo} onClick={handleNavigationClick}>
-                            Code Monitoring
-                        </NavItemLink>
-                    )}
+                    </ul>
 
                     {showBatchChanges && (
                         <NavItemLink url="/batch-changes" icon={BatchChangesIconNav} onClick={handleNavigationClick}>
